@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TMRW Portal Comparison</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Outfit',system-ui,sans-serif;background:#f4f5f7;color:#0f172a;min-height:100vh}
+.pw-gate{position:fixed;top:0;left:0;right:0;bottom:0;background:#0f172a;display:flex;align-items:center;justify-content:center;z-index:9999}
+.pw-box{text-align:center;color:#fff;width:320px}
+.pw-box .pw-logo{font-size:20px;font-weight:800;margin-bottom:4px}
+.pw-box .pw-sub{font-size:11px;color:#64748b;margin-bottom:28px}
+.pw-box input{width:100%;padding:12px 16px;border-radius:8px;border:1px solid #334155;background:#1e293b;color:#fff;font-family:'Outfit',system-ui,sans-serif;font-size:14px;outline:none;margin-bottom:12px}
+.pw-box input::placeholder{color:#475569}
+.pw-box input:focus{border-color:#3b82f6}
+.pw-box button{width:100%;padding:12px;border-radius:8px;border:none;background:#fff;color:#0f172a;font-family:'Outfit',system-ui,sans-serif;font-size:13px;font-weight:700;cursor:pointer}
+.pw-box button:hover{background:#e2e8f0}
+.pw-err{color:#f87171;font-size:11px;margin-top:8px;display:none}
+.content-hidden{display:none}
+header{background:#0f172a;color:#fff;padding:0 20px;display:flex;align-items:center;height:48px;position:sticky;top:0;z-index:100}
+header .logo{font-size:14px;font-weight:800;margin-right:8px}
+header .sub{font-size:10px;color:#64748b}
+.wrap{max-width:1100px;margin:0 auto;padding:20px}
+.summary{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px}
+.sc{background:#fff;border-radius:10px;border:1px solid #e5e7eb;padding:14px;text-align:center}
+.sc .n{font-size:26px;font-weight:700}
+.sc .l{font-size:10px;color:#94a3b8;margin-top:3px;text-transform:uppercase;font-weight:600}
+.legend{display:flex;gap:16px;margin-bottom:16px;font-size:11px;color:#64748b;flex-wrap:wrap;align-items:center}
+.legend span{display:flex;align-items:center;gap:5px}
+.ld{width:9px;height:9px;border-radius:50%;display:inline-block}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
+.fb{padding:5px 14px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid #e5e7eb;background:#fff;color:#64748b;transition:all .15s}
+.fb:hover{background:#f8fafc}
+.fb.a{background:#0f172a;color:#fff;border-color:#0f172a}
+.stg{margin-bottom:12px}
+.sh{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border-radius:10px;border:1px solid #e5e7eb;cursor:pointer;user-select:none}
+.sh h3{font-size:13px;font-weight:700;flex:1}
+.sh.open{border-radius:10px 10px 0 0;border-bottom:1px solid #f1f5f9}
+.cnts{display:flex;gap:4px;flex-wrap:wrap}
+.cn{font-size:9px;padding:2px 7px;border-radius:4px;font-weight:600}
+.cn-b{background:#ecfdf5;color:#065f46}
+.cn-t{background:#eff6ff;color:#1e40af}
+.cn-k{background:#eef2ff;color:#4338ca}
+.cn-c{background:#fef2f2;color:#991b1b}
+.cn-d{background:#fefce8;color:#854d0e}
+.body{background:#fff;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px;padding:6px 0}
+.hdr{display:grid;grid-template-columns:28px 1fr 82px 82px 80px;gap:6px;padding:5px 14px;font-size:9px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.r{display:grid;grid-template-columns:28px 1fr 82px 82px 80px;gap:6px;align-items:center;padding:6px 14px;font-size:12px}
+.r:hover{background:#fafbfc}
+.ic{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+.r.both .ic{background:#ecfdf5;color:#059669}
+.r.tegan .ic{background:#eff6ff;color:#2563eb}
+.r.kosta .ic{background:#eef2ff;color:#6366f1}
+.r.conflict .ic{background:#fef2f2;color:#dc2626}
+.r.dup .ic{background:#fefce8;color:#ca8a04}
+.sq{font-family:monospace;font-size:10px;color:#94a3b8;margin-right:4px}
+.pl{display:inline-block;font-size:9px;padding:2px 7px;border-radius:4px;font-weight:600}
+.s-l{background:#ecfdf5;color:#065f46}
+.s-a{background:#eff6ff;color:#1e40af}
+.s-b{background:#fef2f2;color:#991b1b}
+.s-p{background:#fefce8;color:#854d0e}
+.s-t{background:#eef2ff;color:#4338ca}
+.s-r{background:#fefce8;color:#854d0e}
+.s-s{background:#f1f5f9;color:#64748b}
+.dash{font-size:10px;color:#cbd5e1}
+.note{padding:2px 14px 8px 48px;font-size:10px;color:#94a3b8;font-style:italic;line-height:1.4}
+.fl{font-size:8px;padding:1px 5px;border-radius:3px;background:#eff6ff;color:#2563eb;font-weight:700;margin-left:4px}
+.cp{font-size:8px;color:#10b981;margin-left:2px}
+.chv{font-size:10px;color:#94a3b8;transition:transform .2s;display:inline-block;width:14px}
+.chv.o{transform:rotate(90deg)}
+.stat{font-size:10px;color:#94a3b8}
+@media(max-width:700px){.summary{grid-template-columns:repeat(3,1fr)}.r,.hdr{grid-template-columns:24px 1fr 60px 60px 60px;font-size:11px}}
+</style>
+</head>
+<body>
+<div class="pw-gate" id="pwGate">
+<div class="pw-box">
+<div class="pw-logo">TMRW</div>
+<div class="pw-sub">Portal Comparison Tool</div>
+<input type="password" id="pwInput" placeholder="Enter password" autocomplete="off" autofocus>
+<button onclick="checkPw()">Enter</button>
+<div class="pw-err" id="pwErr">Incorrect password</div>
+</div>
+</div>
+<div id="mainContent" class="content-hidden">
+<header>
+<span class="logo">TMRW</span>
+<span class="sub">Portal Comparison Tool</span>
+</header>
+<div class="wrap" id="app"></div>
+<script>
+const D=[
+{t:"Waitlist Signup Confirmation",ts:"Live",ks:"Live",sq:"0.1",st:"Waitlist & Pre-Registration",tp:"both",kcp:1},
+{t:"Waitlist Survey",ts:null,ks:"Live",sq:"0.2",st:"Waitlist & Pre-Registration",tp:"kosta"},
+{t:"Nurture: What TMRW Actually Does",ts:"Live",ks:null,sq:"0.2",st:"Waitlist & Pre-Registration",tp:"tegan",fl:"Waitlist"},
+{t:"Nurture: Proof It Works",ts:"Blocked",ks:null,sq:"0.3",st:"Waitlist & Pre-Registration",tp:"tegan",fl:"Waitlist"},
+{t:"Waitlist Nurture Sequence",ts:null,ks:"To Do",sq:"0.4",st:"Waitlist & Pre-Registration",tp:"kosta"},
+{t:"Your Spot Is Coming",ts:"Approved",ks:null,sq:"0.4",st:"Waitlist & Pre-Registration",tp:"tegan",fl:"Waitlist"},
+{t:"Pre-Invitation Teaser",ts:"Planned",ks:"To Do",sq:"0.5",st:"Waitlist & Pre-Registration",tp:"both"},
+{t:"Your Spot Is Ready",ts:"Approved",ks:"To Review",sq:"0.5/1.0A",st:"Waitlist & Pre-Registration",tp:"conflict",fl:"Waitlist",kcp:1,nt:"Same email, different copy. Tegan's = new copy, Kosta's = old copy"},
+{t:"Invitation Email (Current Manual)",ts:null,ks:"To Review",sq:"0.6",st:"Waitlist & Pre-Registration",tp:"kosta",kcp:1},
+{t:"Your Spot Expires Tomorrow",ts:"Approved",ks:"To Review",sq:"0.6/1.0B",st:"Waitlist & Pre-Registration",tp:"conflict",fl:"Waitlist",kcp:1,nt:"Same email, different copy"},
+{t:"One Question Before You Go",ts:"Approved",ks:null,sq:"0.7a",st:"Waitlist & Pre-Registration",tp:"tegan",fl:"Waitlist"},
+{t:"Reengagement (Lapsed)",ts:"Approved",ks:null,sq:"0.7b",st:"Waitlist & Pre-Registration",tp:"tegan",fl:"Waitlist"},
+{t:"Order Confirmation",ts:"Live",ks:"Live",sq:"1.1",st:"Registration & Checkout",tp:"both",kcp:1},
+{t:"Mark CEO Welcome (+4h)",ts:null,ks:"Live",sq:"1.1A",st:"Registration & Checkout",tp:"kosta",kcp:1},
+{t:"What You Just Started (+48h)",ts:null,ks:"To Do",sq:"1.2",st:"Registration & Checkout",tp:"kosta"},
+{t:"Cart Abandon 1h",ts:"Live",ks:"To Do",sq:"1.3",st:"Registration & Checkout",tp:"conflict",kcp:1,nt:"DOUBLE-UP: Tegan's 'Cart Abandon 1 Hour' = Kosta's 'Cart Abandon Step 1 (+1h)'"},
+{t:"Cart Abandon 24h",ts:"Live",ks:"To Do",sq:"1.4",st:"Registration & Checkout",tp:"conflict",kcp:1,nt:"DOUBLE-UP: Tegan's 'Cart Abandon 24 Hours' = Kosta's 'Cart Abandon Step 2 (+24h)'"},
+{t:"Cart Abandon (+72h) Social Proof",ts:"Live",ks:"To Do",sq:"1.5",st:"Registration & Checkout",tp:"conflict"},
+{t:"Cart Abandon (+7d) Objection Handler",ts:"Planned",ks:"To Do",sq:"1.6",st:"Registration & Checkout",tp:"both"},
+{t:"Welcome Content Strategy",ts:"Planned",ks:"To Do",sq:"CONTENT-1",st:"Registration & Checkout",tp:"both"},
+{t:"Payment Failed",ts:"Live",ks:"To Do",sq:"PAY-1",st:"Registration & Checkout",tp:"conflict",kcp:1,nt:"DOUBLE-UP: Tegan's 'Payment Failed (+1d)' = Kosta's 'Payment Failed (Immediate)'"},
+{t:"Payment Reminder (+48h)",ts:"Live",ks:"To Do",sq:"PAY-2",st:"Registration & Checkout",tp:"conflict",kcp:1,nt:"Tegan's 'Payment Reminder Sequence' may cover this"},
+{t:"Membership Will Be Paused (+7d)",ts:null,ks:"To Review",sq:"PAY-3",st:"Registration & Checkout",tp:"kosta",kcp:1},
+{t:"Subscription Renewal Confirmation",ts:null,ks:"To Review",sq:"PAY-4",st:"Registration & Checkout",tp:"kosta",kcp:1},
+{t:"SMS Opt-In",ts:null,ks:"To Do",sq:"SMS-OPT",st:"Registration & Checkout",tp:"kosta"},
+{t:"Referral/Advocate Confirmation",ts:"Live",ks:null,sq:"",st:"Registration & Checkout",tp:"tegan"},
+{t:"Login Reminder (+24h)",ts:"Live",ks:"To Do",sq:"2.1",st:"Health Story & Welcome Call",tp:"conflict",kcp:1},
+{t:"First Login Celebration",ts:"Live",ks:"To Do",sq:"2.2",st:"Health Story & Welcome Call",tp:"conflict"},
+{t:"Login Reminder (+3 days)",ts:"Live",ks:"To Do",sq:"2.3",st:"Health Story & Welcome Call",tp:"conflict",kcp:1},
+{t:"Health Story Incomplete Reminder",ts:"Live",ks:"Live",sq:"2.4",st:"Health Story & Welcome Call",tp:"both",kcp:1,nt:"DOUBLE-UP: Tegan's 'Health Story Started Not Complete (+48h)' = this"},
+{t:"You're Nearly There (60%+ done)",ts:null,ks:"To Do",sq:"2.4B",st:"Health Story & Welcome Call",tp:"kosta"},
+{t:"Health Story Complete Confirmation",ts:"Live",ks:"Live",sq:"2.5",st:"Health Story & Welcome Call",tp:"both",kcp:1,nt:"DOUBLE-UP: Tegan's 'Health Story Completed' = this"},
+{t:"Your Kit Is Arriving Soon (+7d)",ts:null,ks:"To Do",sq:"2.6",st:"Health Story & Welcome Call",tp:"kosta"},
+{t:"Personal Check-in (+14d)",ts:null,ks:"To Do",sq:"2.7",st:"Health Story & Welcome Call",tp:"kosta"},
+{t:"We're Holding Your Spot (+21d)",ts:null,ks:"To Do",sq:"2.8",st:"Health Story & Welcome Call",tp:"kosta"},
+{t:"Welcome Call Invite",ts:"Live",ks:"Live",sq:"2.11",st:"Health Story & Welcome Call",tp:"both",kcp:1},
+{t:"Welcome Call Booking Reminder",ts:"Live",ks:"Live",sq:"2.12",st:"Health Story & Welcome Call",tp:"both",kcp:1},
+{t:"Welcome Call Booking Confirmation",ts:"Live",ks:"Live",sq:"2.13",st:"Health Story & Welcome Call",tp:"both",kcp:1},
+{t:"Welcome Call Reminder (Day Of)",ts:"Live",ks:"Live",sq:"2.14",st:"Health Story & Welcome Call",tp:"both",kcp:1},
+{t:"Welcome Call No-Show Follow-up",ts:"Live",ks:"To Do",sq:"2.15",st:"Health Story & Welcome Call",tp:"conflict",kcp:1},
+{t:"Ready to Start Your Story? (+48h)",ts:null,ks:"Live",sq:"2.23",st:"Health Story & Welcome Call",tp:"kosta"},
+{t:"Welcome Call Booking (+1d)",ts:"Live",ks:null,sq:"",st:"Health Story & Welcome Call",tp:"tegan"},
+{t:"Welcome Call Check-in (+3d)",ts:"Live",ks:null,sq:"",st:"Health Story & Welcome Call",tp:"tegan"},
+{t:"We're Making Your Goal (+7d)",ts:"Live",ks:null,sq:"",st:"Health Story & Welcome Call",tp:"tegan"},
+{t:"Collection Day Prep Reminder",ts:"Live",ks:null,sq:"",st:"Health Story & Welcome Call",tp:"tegan"},
+{t:"Call at TMRW Office",ts:"Live",ks:null,sq:"",st:"Health Story & Welcome Call",tp:"tegan"},
+{t:"Kit Shipped + Prep Instructions",ts:"Live",ks:"Live",sq:"3.1",st:"Kit Fulfillment & Sample",tp:"both",kcp:1},
+{t:"Kit Delivered Confirmation",ts:"Live",ks:"To Do",sq:"3.2",st:"Kit Fulfillment & Sample",tp:"conflict"},
+{t:"Collection-Day Prep Reminder (6AM)",ts:null,ks:"To Do",sq:"3.2A",st:"Kit Fulfillment & Sample",tp:"kosta"},
+{t:"Sample on Its Way",ts:null,ks:"To Do",sq:"3.2B",st:"Kit Fulfillment & Sample",tp:"kosta"},
+{t:"Register Your Kit (+3d)",ts:null,ks:"To Do",sq:"3.3",st:"Kit Fulfillment & Sample",tp:"kosta"},
+{t:"Register Kit SMS (+5d)",ts:null,ks:"To Do",sq:"3.4",st:"Kit Fulfillment & Sample",tp:"kosta"},
+{t:"Your Kit Is Waiting (+7d)",ts:null,ks:"To Do",sq:"3.5",st:"Kit Fulfillment & Sample",tp:"kosta"},
+{t:"Sample Not Received (+10-14d)",ts:"Live",ks:"Live",sq:"3.6",st:"Kit Fulfillment & Sample",tp:"both",kcp:1},
+{t:"Sample Reminder (+15d)",ts:null,ks:"Live",sq:"3.6M",st:"Kit Fulfillment & Sample",tp:"kosta"},
+{t:"Don't Miss Out (+21d)",ts:null,ks:"To Do",sq:"3.7",st:"Kit Fulfillment & Sample",tp:"kosta"},
+{t:"Journey Hasn't Started (+45d)",ts:null,ks:"To Do",sq:"3.9",st:"Kit Fulfillment & Sample",tp:"kosta"},
+{t:"QC Fail at TMRW Office",ts:"Live",ks:"To Do",sq:"3.11",st:"Kit Fulfillment & Sample",tp:"conflict",kcp:1,nt:"DOUBLE-UP: Tegan's 'QC Fail: Internal (QC-1)' is the NEW version of this. Also 'Kit Hassle / Expired' may overlap."},
+{t:"QC Pass + Coach Assigned",ts:"Live",ks:"Approved",sq:"3.12",st:"Kit Fulfillment & Sample",tp:"conflict",nt:"DOUBLE-UP: Tegan's version = Kosta's 'QC Pass \u2014 Sample Shipped to Lab'"},
+{t:"Sample Treated Content (+3d)",ts:"Live",ks:null,sq:"",st:"Kit Fulfillment & Sample",tp:"tegan"},
+{t:"Sample Kit Waiting (+7d)",ts:"Live",ks:null,sq:"",st:"Kit Fulfillment & Sample",tp:"tegan"},
+{t:"Bloods Ready / Blood Sample Call",ts:"Live",ks:null,sq:"",st:"Kit Fulfillment & Sample",tp:"tegan"},
+{t:"Kit Hassle / Expired (+14d)",ts:"Live",ks:null,sq:"",st:"Kit Fulfillment & Sample",tp:"tegan",nt:"May overlap with QC Fail at TMRW Office"},
+{t:"Requisition Sent",ts:"Approved",ks:null,sq:"BT-1",st:"Kit Fulfillment & Sample",tp:"tegan",fl:"Blood Test"},
+{t:"Blood Test 5-Day Follow-Up",ts:"Approved",ks:null,sq:"BT-2",st:"Kit Fulfillment & Sample",tp:"tegan",fl:"Blood Test"},
+{t:"Blood Test Results Received",ts:"Approved",ks:null,sq:"BT-3",st:"Kit Fulfillment & Sample",tp:"tegan",fl:"Blood Test"},
+{t:"Sample Received at Lab",ts:"Approved",ks:"Live",sq:"DZ-1/4.1",st:"Lab Processing & Analysis",tp:"conflict",kcp:1,nt:"DOUBLE-UP: Tegan's DZ-1 replaces Kosta's 4.1. Different copy, same moment."},
+{t:"Inside Scoop: Sleep / What Happens in Lab (+3d)",ts:"Approved",ks:"Live",sq:"DZ-2/4.1A",st:"Lab Processing & Analysis",tp:"conflict",nt:"DOUBLE-UP: Tegan's DZ-2 replaces Kosta's 4.1A. New content."},
+{t:"Inside Scoop: Brain Fog / Body Signals (+7d)",ts:"Approved",ks:"Live",sq:"DZ-3/4.1B",st:"Lab Processing & Analysis",tp:"conflict",nt:"DOUBLE-UP: Tegan's DZ-3 replaces Kosta's 4.1B. New content."},
+{t:"Results Preview / Almost Ready (+12d)",ts:"Approved",ks:"Live",sq:"DZ-4/4.1C",st:"Lab Processing & Analysis",tp:"conflict",kcp:1,nt:"DOUBLE-UP: Tegan's DZ-4 replaces Kosta's 4.1C."},
+{t:"Inside Scoop: Health Habits (+16d)",ts:"Approved",ks:null,sq:"DZ-5",st:"Lab Processing & Analysis",tp:"tegan",fl:"Dead Zone",nt:"NEW \u2014 no equivalent in Kosta's portal"},
+{t:"Still Here / Still in Lab (+18d)",ts:"Approved",ks:"Live",sq:"DZ-6/4.1D",st:"Lab Processing & Analysis",tp:"conflict",kcp:1,nt:"DOUBLE-UP: Tegan's DZ-6 replaces Kosta's 4.1D."},
+{t:"Delay Acknowledgment / Still With You (+22d)",ts:"Approved",ks:"Live",sq:"DZ-7/4.1E",st:"Lab Processing & Analysis",tp:"conflict",kcp:1,nt:"DOUBLE-UP: Tegan's DZ-7 replaces Kosta's 4.1E."},
+{t:"Clinician Manual Outreach (+28d)",ts:"Approved",ks:null,sq:"DZ-8",st:"Lab Processing & Analysis",tp:"tegan",fl:"Dead Zone",nt:"NEW \u2014 no equivalent in Kosta's portal"},
+{t:"QC Fail: Internal / QC Fail at TMRW",ts:"Approved",ks:"To Do",sq:"QC-1/3.11",st:"Lab Processing & Analysis",tp:"conflict",kcp:1,nt:"DOUBLE-UP: Tegan's QC-1 is the NEW version of Kosta's 3.11."},
+{t:"QC Fail: Lab / QC Fail at True Labs",ts:"Approved",ks:"To Do",sq:"QC-2/4.2",st:"Lab Processing & Analysis",tp:"conflict",kcp:1,nt:"DOUBLE-UP: Tegan's QC-2 is the NEW version of Kosta's 4.2."},
+{t:"Results Ready \u2014 Book Insights Call",ts:null,ks:"Live",sq:"4.3",st:"Lab Processing & Analysis",tp:"kosta"},
+{t:"Booking Reminder (+48h)",ts:null,ks:"Live",sq:"4.3A",st:"Lab Processing & Analysis",tp:"kosta",kcp:1},
+{t:"Still Haven't Booked? (+5d)",ts:null,ks:"To Do",sq:"4.3B",st:"Lab Processing & Analysis",tp:"kosta"},
+{t:"Coach Personal Reach-out (+10d)",ts:null,ks:"To Do",sq:"4.3C",st:"Lab Processing & Analysis",tp:"kosta"},
+{t:"Dead Zone Content Strategy",ts:"Planned",ks:"To Do",sq:"CONTENT-3",st:"Lab Processing & Analysis",tp:"both"},
+{t:"Insights Call Booking Confirmation",ts:"Live",ks:"Live",sq:"5.1",st:"Results & Insights Call",tp:"both",kcp:1},
+{t:"Insights Call Reminder (Day Before)",ts:"Live",ks:"Approved",sq:"5.2",st:"Results & Insights Call",tp:"conflict",kcp:1},
+{t:"Insights Call Reminder (Day Of)",ts:"Live",ks:"Approved",sq:"5.3",st:"Results & Insights Call",tp:"conflict",kcp:1},
+{t:"Insights Call Reschedule",ts:"Live",ks:"Approved",sq:"5.4",st:"Results & Insights Call",tp:"conflict",kcp:1},
+{t:"Insights Call Cancellation",ts:"Live",ks:"Approved",sq:"5.5",st:"Results & Insights Call",tp:"conflict",kcp:1},
+{t:"Insights Call No-Show",ts:"Live",ks:"Approved",sq:"5.6",st:"Results & Insights Call",tp:"conflict",kcp:1},
+{t:"Post-Call NPS Survey (+3h)",ts:null,ks:"To Do",sq:"5.7",st:"Results & Insights Call",tp:"kosta"},
+{t:"Call Summary",ts:null,ks:"To Do",sq:"5.7A",st:"Results & Insights Call",tp:"kosta"},
+{t:"Questions from Your Call? (+24h)",ts:null,ks:"To Do",sq:"5.8",st:"Results & Insights Call",tp:"kosta"},
+{t:"Dashboard Unlocked",ts:"Live",ks:"To Do",sq:"5.9",st:"Results & Insights Call",tp:"conflict"},
+{t:"Plan Delivery / Dashboard Tour",ts:null,ks:"Live",sq:"5.10",st:"Results & Insights Call",tp:"kosta"},
+{t:"Results Ready Content Strategy",ts:"Planned",ks:"To Do",sq:"CONTENT-4",st:"Results & Insights Call",tp:"both"},
+{t:"Plan Delivery Content Strategy",ts:"Planned",ks:"To Do",sq:"CONTENT-5",st:"Results & Insights Call",tp:"both"},
+{t:"Dashboard Is Live",ts:"Blocked",ks:null,sq:"DU-1",st:"Results & Insights Call",tp:"tegan",fl:"Dashboard Unlock"},
+{t:"Nudge: Biological Clocks (+3d)",ts:"Approved",ks:null,sq:"DU-2",st:"Results & Insights Call",tp:"tegan",fl:"Dashboard Unlock"},
+{t:"Name the Friction (+8d)",ts:"Approved",ks:null,sq:"DU-3",st:"Results & Insights Call",tp:"tegan",fl:"Dashboard Unlock"},
+{t:"Clinician Manual Outreach (+10d)",ts:"Approved",ks:null,sq:"DU-4",st:"Results & Insights Call",tp:"tegan",fl:"Dashboard Unlock"},
+{t:"Supplement Plan Explained (+3d)",ts:"Live",ks:"To Do",sq:"5.11",st:"Supplement Conversions",tp:"conflict"},
+{t:"Most Members Start Here (+7d)",ts:null,ks:"To Do",sq:"5.12",st:"Supplement Conversions",tp:"kosta"},
+{t:"Protocol Ready When You Are (+14d)",ts:null,ks:"To Do",sq:"5.13",st:"Supplement Conversions",tp:"kosta"},
+{t:"Monthly Fitness Check-in",ts:"Live",ks:null,sq:"",st:"Supplement Conversions",tp:"tegan"},
+{t:"7-Day Post-Results Check-in",ts:"Live",ks:"To Do",sq:"6.1",st:"Ongoing Journey",tp:"conflict",kcp:1},
+{t:"Monthly Clinician Check-in",ts:"Live",ks:"To Review",sq:"6.2",st:"Ongoing Journey",tp:"conflict"},
+{t:"Monthly Check-in Summary",ts:"Planned",ks:"To Do",sq:"6.2C",st:"Ongoing Journey",tp:"both"},
+{t:"Monthly Value Email",ts:"Planned",ks:"To Do",sq:"6.3",st:"Ongoing Journey",tp:"both"},
+{t:"90-Day Retention Content Strategy",ts:null,ks:"To Do",sq:"CONTENT-6",st:"Ongoing Journey",tp:"kosta",kcp:1},
+{t:"We Miss You (At-Risk)",ts:null,ks:"To Do",sq:"CHURN-1",st:"Retention & Churn",tp:"kosta"},
+{t:"Before You Go (Pre-Cancel)",ts:null,ks:"To Do",sq:"CHURN-2",st:"Retention & Churn",tp:"kosta"},
+{t:"We Understand (+7d Post-Cancel)",ts:null,ks:"To Do",sq:"CHURN-3",st:"Retention & Churn",tp:"kosta"},
+{t:"Your Biology Didn't Stop (+30d)",ts:null,ks:"To Do",sq:"CHURN-4",st:"Retention & Churn",tp:"kosta"},
+{t:"Still Thinking About Health? (+90d)",ts:null,ks:"To Do",sq:"CHURN-5",st:"Retention & Churn",tp:"kosta"},
+{t:"One Month In",ts:null,ks:"To Do",sq:"MILE-1",st:"Retention & Churn",tp:"kosta"},
+{t:"Three Months",ts:null,ks:"To Do",sq:"MILE-2",st:"Retention & Churn",tp:"kosta"},
+{t:"Halfway to Retest",ts:null,ks:"To Do",sq:"MILE-3",st:"Retention & Churn",tp:"kosta"},
+{t:"Know Someone Who'd Benefit?",ts:null,ks:"To Do",sq:"REF-1",st:"Retention & Churn",tp:"kosta"},
+{t:"NPS Survey",ts:"Live",ks:null,sq:"",st:"Retention & Churn",tp:"tegan"},
+{t:"Daily Sachets Delivered",ts:"Live",ks:"To Do",sq:"SACH-1.3",st:"Supplement Adherence",tp:"conflict"},
+{t:"How Are Your Supplements? (+2wk)",ts:"Live",ks:"To Do",sq:"SUP-CHK1",st:"Supplement Adherence",tp:"conflict"},
+{t:"The Six-Week Mark",ts:null,ks:"To Do",sq:"SUP-CHK2",st:"Supplement Adherence",tp:"kosta"},
+{t:"Getting the Most From Your Protocol",ts:null,ks:"To Do",sq:"SUP-GUIDE",st:"Supplement Adherence",tp:"kosta"},
+{t:"Protocol Has Paused",ts:null,ks:"To Do",sq:"SUP-LAPSE",st:"Supplement Adherence",tp:"kosta"},
+{t:"Supplement Reorder Reminder",ts:null,ks:"To Do",sq:"SUP-REORD",st:"Supplement Adherence",tp:"kosta"},
+{t:"Restock Kit Shipped",ts:"Live",ks:null,sq:"",st:"Supplement Adherence",tp:"tegan"},
+{t:"Restock Kit Delivered",ts:"Live",ks:null,sq:"",st:"Supplement Adherence",tp:"tegan"},
+{t:"Update Call Booking Confirmation",ts:"Live",ks:null,sq:"",st:"Supplement Adherence",tp:"tegan"},
+{t:"Update Call Reminder",ts:"Live",ks:null,sq:"",st:"Supplement Adherence",tp:"tegan"},
+{t:"Update Call Day Of Reminder",ts:"Live",ks:null,sq:"",st:"Supplement Adherence",tp:"tegan"},
+{t:"Update Call No-Show",ts:"Live",ks:null,sq:"",st:"Supplement Adherence",tp:"tegan"},
+{t:"Retest Preparation",ts:"Live",ks:"To Review",sq:"7.1",st:"Retest Cycle",tp:"conflict",kcp:1},
+{t:"Retest Coming in 2 Weeks",ts:null,ks:"To Do",sq:"7.1A",st:"Retest Cycle",tp:"kosta"},
+{t:"Retest Coming Next Week",ts:"Planned",ks:"To Do",sq:"7.1B",st:"Retest Cycle",tp:"both"},
+{t:"Updated Health Story Call",ts:"Live",ks:null,sq:"",st:"Retest Cycle",tp:"tegan"},
+{t:"Retest Overdue \u2014 Nudge",ts:null,ks:"To Do",sq:"7.2A",st:"Retest Cycle",tp:"kosta"},
+{t:"Retest Kit Shipped",ts:"Live",ks:"To Do",sq:"7.3",st:"Retest Cycle",tp:"conflict"},
+{t:"Retest Kit Delivered",ts:"Live",ks:"To Do",sq:"7.4",st:"Retest Cycle",tp:"conflict"},
+{t:"Retest Kit Registered",ts:"Live",ks:null,sq:"",st:"Retest Cycle",tp:"tegan"},
+{t:"Retest Kit Registration Ladder",ts:null,ks:"To Do",sq:"7.5",st:"Retest Cycle",tp:"kosta"},
+{t:"Retest Sample Return Reminders",ts:null,ks:"To Do",sq:"7.6",st:"Retest Cycle",tp:"kosta"},
+{t:"Retest Sample Received at Lab",ts:null,ks:"To Do",sq:"7.7",st:"Retest Cycle",tp:"kosta"},
+{t:"Retest Results Ready",ts:null,ks:"To Do",sq:"7.8",st:"Retest Cycle",tp:"kosta"},
+{t:"Book Update Insights Call",ts:null,ks:"To Do",sq:"7.9",st:"Retest Cycle",tp:"kosta"},
+{t:"Update Call Booking Reminder (+48h)",ts:null,ks:"To Do",sq:"7.9A",st:"Retest Cycle",tp:"kosta"},
+{t:"Update Call Booking Confirmation",ts:null,ks:"To Do",sq:"7.9B",st:"Retest Cycle",tp:"kosta"},
+{t:"Update Call Day-Of Reminder",ts:null,ks:"To Do",sq:"7.9C",st:"Retest Cycle",tp:"kosta"},
+{t:"Update Call No-Show",ts:null,ks:"To Do",sq:"7.9D",st:"Retest Cycle",tp:"kosta"},
+{t:"Here's What Changed (Before/After)",ts:null,ks:"To Do",sq:"7.10",st:"Post-Retest",tp:"kosta"},
+{t:"Dashboard Updated (Retest)",ts:null,ks:"To Do",sq:"7.11",st:"Post-Retest",tp:"kosta"},
+{t:"Plan Finalization Notification",ts:null,ks:"To Do",sq:"7.12",st:"Post-Retest",tp:"kosta"},
+{t:"Your Next 6 Months",ts:null,ks:"To Do",sq:"7.13",st:"Post-Retest",tp:"kosta"},
+{t:"Medical Membership Welcome",ts:"Planned",ks:"Stopped",sq:"MED-1",st:"Medical Membership",tp:"conflict",nt:"Kosta marked Stopped \u2014 collapsed into single membership"},
+{t:"Pathology Requisition Sent",ts:null,ks:"Approved",sq:"MED-2",st:"Medical Membership",tp:"kosta"},
+{t:"Your Blood Test Is Waiting (+7d)",ts:null,ks:"To Do",sq:"MED-2.11",st:"Medical Membership",tp:"kosta"},
+{t:"Still Need to Get Bloods? (+14d)",ts:null,ks:"To Do",sq:"MED-2.12",st:"Medical Membership",tp:"kosta"},
+{t:"Bloods Received Confirmation",ts:null,ks:"To Do",sq:"MED-3.1",st:"Medical Membership",tp:"kosta"},
+{t:"Daily Sachet \u2014 Order Confirmed",ts:"Live",ks:"Approved",sq:"SUP-DS-1.0",st:"Supplement Fulfillment",tp:"conflict"},
+{t:"Daily Sachet \u2014 With Pharmacy",ts:"Live",ks:"Approved",sq:"SUP-DS-1.1",st:"Supplement Fulfillment",tp:"conflict"},
+{t:"Daily Sachet \u2014 Shipped",ts:"Live",ks:"Approved",sq:"SUP-DS-1.2",st:"Supplement Fulfillment",tp:"conflict"},
+{t:"Sachet Restock Confirmation",ts:"Live",ks:null,sq:"",st:"Supplement Fulfillment",tp:"tegan"},
+{t:"Precision Pod \u2014 Order Confirmed",ts:"Live",ks:"Live",sq:"SUP-PP-1.0",st:"Supplement Fulfillment",tp:"both"},
+{t:"Precision Pod \u2014 With Pharmacy",ts:"Live",ks:"Approved",sq:"SUP-PP-1.1",st:"Supplement Fulfillment",tp:"conflict"},
+{t:"Precision Pod \u2014 Shipped",ts:"Live",ks:"Live",sq:"SUP-PP-1.2",st:"Supplement Fulfillment",tp:"both"},
+{t:"Precision Pod \u2014 Delivered",ts:"Live",ks:null,sq:"",st:"Supplement Fulfillment",tp:"tegan"},
+{t:"Precision Pod \u2014 Renewal Reminder",ts:"Live",ks:"Approved",sq:"SUP-PP-1.4",st:"Supplement Fulfillment",tp:"conflict"},
+{t:"Precision Pod \u2014 Measure Reminder",ts:"Live",ks:null,sq:"",st:"Supplement Fulfillment",tp:"tegan"},
+{t:"Order Placed (NEW copy)",ts:"Approved",ks:null,sq:"PP-1.0",st:"Supplement Fulfillment",tp:"tegan",fl:"Precision Pods",nt:"Tegan's new copy to replace existing"},
+{t:"Quality Check by Pharmacist (NEW copy)",ts:"Approved",ks:null,sq:"PP-1.1",st:"Supplement Fulfillment",tp:"tegan",fl:"Precision Pods"},
+{t:"Order Shipped (NEW copy)",ts:"Approved",ks:null,sq:"PP-1.2",st:"Supplement Fulfillment",tp:"tegan",fl:"Precision Pods"},
+{t:"Order Delivered (NEW copy)",ts:"Approved",ks:null,sq:"PP-1.3",st:"Supplement Fulfillment",tp:"tegan",fl:"Precision Pods"},
+{t:"2-Week Check-in (NEW)",ts:"Approved",ks:null,sq:"PP-1.4",st:"Supplement Fulfillment",tp:"tegan",fl:"Precision Pods"},
+{t:"Membership Renewal Reminder (NEW copy)",ts:"Approved",ks:null,sq:"PP-1.5",st:"Supplement Fulfillment",tp:"tegan",fl:"Precision Pods"},
+{t:"Gut Microbiome Test \u2014 Order Placed",ts:null,ks:"Live",sq:"ADV-GUT-1.0",st:"Advanced Testing",tp:"kosta"},
+{t:"Gut Microbiome Test \u2014 Results Ready",ts:null,ks:"Approved",sq:"ADV-GUT-1.2",st:"Advanced Testing",tp:"kosta"},
+{t:"Advanced Hormone Test \u2014 Order Placed",ts:"Live",ks:"Live",sq:"ADV-HOR-1.0",st:"Advanced Testing",tp:"both"},
+{t:"Advanced Hormone Test \u2014 Shipped",ts:"Live",ks:"Approved",sq:"ADV-HOR-1.1",st:"Advanced Testing",tp:"conflict"},
+{t:"Advanced Hormone Test \u2014 Results Ready",ts:"Planned",ks:"Approved",sq:"ADV-HOR-1.2",st:"Advanced Testing",tp:"conflict"},
+{t:"Advanced Hormone Test \u2014 4wk Follow-up",ts:null,ks:"Approved",sq:"ADV-HOR-1.3",st:"Advanced Testing",tp:"kosta"},
+{t:"Advanced Hormone Test \u2014 8wk Follow-up",ts:null,ks:"Approved",sq:"ADV-HOR-1.4",st:"Advanced Testing",tp:"kosta"},
+{t:"Advanced Hormone Test \u2014 Bath",ts:"Live",ks:null,sq:"",st:"Advanced Testing",tp:"tegan"},
+{t:"NAD+ Energy Test \u2014 Order Placed",ts:null,ks:"Live",sq:"ADV-NAD-1.0",st:"Advanced Testing",tp:"kosta"},
+{t:"NAD+ Energy Test \u2014 Results Ready",ts:null,ks:"Approved",sq:"ADV-NAD-1.2",st:"Advanced Testing",tp:"kosta"},
+{t:"Omega 3 Test \u2014 Order Placed",ts:"Live",ks:"Live",sq:"ADV-O3-1.0",st:"Advanced Testing",tp:"both"},
+{t:"Omega 3 Test \u2014 Results Ready",ts:"Live",ks:"Approved",sq:"ADV-O3-1.2",st:"Advanced Testing",tp:"conflict"},
+{t:"MBR Synergy Test \u2014 Order Placed",ts:"Live",ks:null,sq:"",st:"Advanced Testing",tp:"tegan"},
+{t:"MBR Synergy Test \u2014 Results Ready",ts:"Live",ks:null,sq:"",st:"Advanced Testing",tp:"tegan"},
+{t:"Health Coach Allocation",ts:"Live",ks:"Live",sq:"MAN-COACH",st:"Manual Templates",tp:"both",nt:"DOUBLE-UP: Tegan's 'First Call Confirmation' may be same"},
+{t:"Health Coach Welcome Response",ts:"Live",ks:"Approved",sq:"MAN-COACH-W",st:"Manual Templates",tp:"conflict"},
+{t:"Introduction to Customer Ops",ts:null,ks:"Approved",sq:"MAN-INTRO",st:"Manual Templates",tp:"kosta"},
+{t:"Privacy & Data Questions",ts:null,ks:"Approved",sq:"MAN-PRIVACY",st:"Manual Templates",tp:"kosta"},
+{t:"VIP Registration Invitation",ts:null,ks:"Live",sq:"MAN-VIP",st:"Manual Templates",tp:"kosta"},
+{t:"VIP Registration Reminder",ts:null,ks:"Approved",sq:"MAN-VIP-REM",st:"Manual Templates",tp:"kosta"},
+{t:"Health Coach: Reschedule",ts:"Live",ks:null,sq:"",st:"Manual Templates",tp:"tegan"},
+{t:"Results and Bulk Questions",ts:"Live",ks:null,sq:"",st:"Manual Templates",tp:"tegan"},
+{t:"Pricing and Bulk Questions",ts:"Live",ks:null,sq:"",st:"Manual Templates",tp:"tegan"},
+{t:"Reschedule to Customer Care",ts:"Live",ks:null,sq:"",st:"Manual Templates",tp:"tegan"},
+];
+
+const S=["Waitlist & Pre-Registration","Registration & Checkout","Health Story & Welcome Call","Kit Fulfillment & Sample","Lab Processing & Analysis","Results & Insights Call","Supplement Conversions","Ongoing Journey","Retention & Churn","Supplement Adherence","Retest Cycle","Post-Retest","Medical Membership","Supplement Fulfillment","Advanced Testing","Manual Templates"];
+function pc(s){if(!s)return'';return s==='Live'?'s-l':s==='Approved'?'s-a':s==='Blocked'?'s-b':s==='Planned'?'s-p':s==='To Do'?'s-t':s==='To Review'?'s-r':s==='Stopped'?'s-s':'s-p';}
+let F='all',O={};S.forEach(s=>O[s]=true);
+
+function render(){
+let tb=0,tt=0,tk=0,tc=0,td=D.filter(d=>d.nt&&d.nt.includes('DOUBLE')).length;
+D.forEach(d=>{if(d.tp==='both')tb++;else if(d.tp==='tegan')tt++;else if(d.tp==='kosta')tk++;else if(d.tp==='conflict')tc++;});
+let h=`<div class="summary">
+<div class="sc"><div class="n">${D.length}</div><div class="l">Total unique</div></div>
+<div class="sc"><div class="n" style="color:#059669">${tb}</div><div class="l">In both</div></div>
+<div class="sc"><div class="n" style="color:#2563eb">${tt}</div><div class="l">Only Tegan's</div></div>
+<div class="sc"><div class="n" style="color:#6366f1">${tk}</div><div class="l">Only Kosta's</div></div>
+<div class="sc"><div class="n" style="color:#dc2626">${tc}</div><div class="l">Conflicts</div></div>
+</div>
+<div class="legend">
+<span><span class="ld" style="background:#34d399"></span>In both</span>
+<span><span class="ld" style="background:#60a5fa"></span>Only Tegan's</span>
+<span><span class="ld" style="background:#a5b4fc"></span>Only Kosta's</span>
+<span><span class="ld" style="background:#f87171"></span>Status conflict</span>
+<span><span class="ld" style="background:#fbbf24"></span>Double-up noted</span>
+<span style="margin-left:auto;font-size:10px;color:#94a3b8"><span class="cp">\u25cf</span> = copy exists in Kosta's</span>
+</div>
+<div class="filters">
+<span style="font-size:11px;color:#94a3b8;font-weight:600">Filter:</span>
+<span class="fb ${F==='all'?'a':''}" onclick="F='all';render()">All (${D.length})</span>
+<span class="fb ${F==='conflict'?'a':''}" onclick="F='conflict';render()">Conflicts (${tc})</span>
+<span class="fb ${F==='tegan'?'a':''}" onclick="F='tegan';render()">Only Tegan's (${tt})</span>
+<span class="fb ${F==='kosta'?'a':''}" onclick="F='kosta';render()">Only Kosta's (${tk})</span>
+<span class="fb ${F==='both'?'a':''}" onclick="F='both';render()">In both (${tb})</span>
+<span class="fb ${F==='dup'?'a':''}" onclick="F='dup';render()">Double-ups (${td})</span>
+</div>
+<div class="hdr"><div></div><div>Touchpoint</div><div>Tegan's</div><div>Kosta's</div><div></div></div>`;
+
+S.forEach(st=>{
+let items=D.filter(d=>d.st===st);
+let filtered=items.filter(d=>F==='all'?true:F==='dup'?(d.nt&&d.nt.includes('DOUBLE')):d.tp===F);
+if(!filtered.length)return;
+let bc=filtered.filter(d=>d.tp==='both').length,tg=filtered.filter(d=>d.tp==='tegan').length,ko=filtered.filter(d=>d.tp==='kosta').length,co=filtered.filter(d=>d.tp==='conflict').length,du=filtered.filter(d=>d.nt&&d.nt.includes('DOUBLE')).length;
+
+h+=`<div class="stg"><div class="sh ${O[st]?'open':''}" onclick="O['${st}']=!O['${st}'];render()">
+<span class="chv ${O[st]?'o':''}">\u25b6</span>
+<h3>${st}</h3>
+<div class="cnts">
+${bc?`<span class="cn cn-b">${bc} both</span>`:''}
+${tg?`<span class="cn cn-t">${tg} Tegan</span>`:''}
+${ko?`<span class="cn cn-k">${ko} Kosta</span>`:''}
+${co?`<span class="cn cn-c">${co} conflict</span>`:''}
+${du?`<span class="cn cn-d">${du} double-up</span>`:''}
+</div></div>`;
+
+if(O[st]){
+h+=`<div class="body">`;
+filtered.forEach(d=>{
+let icon=d.tp==='both'?'=':d.tp==='conflict'?'!':d.tp==='tegan'?'T':'K';
+let cls=(d.nt&&d.nt.includes('DOUBLE'))?'dup':d.tp;
+let fl=d.fl?`<span class="fl">${d.fl}</span>`:'';
+let cp=d.kcp?`<span class="cp">\u25cf</span>`:'';
+let stat=d.tp==='both'?'<span class="stat">matching</span>':d.tp==='conflict'?'<span class="stat" style="color:#dc2626">different</span>':d.tp==='tegan'?'<span class="stat">not in K</span>':'<span class="stat">not in T</span>';
+h+=`<div class="r ${cls}">
+<div class="ic">${icon}</div>
+<div><span class="sq">${d.sq||''}</span> ${d.t}${fl}${cp}</div>
+<div>${d.ts?`<span class="pl ${pc(d.ts)}">${d.ts}</span>`:'<span class="dash">\u2014</span>'}</div>
+<div>${d.ks?`<span class="pl ${pc(d.ks)}">${d.ks}</span>`:'<span class="dash">\u2014</span>'}</div>
+<div>${stat}</div>
+</div>`;
+if(d.nt)h+=`<div class="note">\u26a0 ${d.nt}</div>`;
+});
+h+=`</div>`;}
+h+=`</div>`;
+});
+document.getElementById('app').innerHTML=h;
+}
+render();
+</script>
+</div>
+<script>
+function checkPw(){
+var p=document.getElementById('pwInput').value;
+if(p==='startmytomorrow'){
+document.getElementById('pwGate').style.display='none';
+document.getElementById('mainContent').classList.remove('content-hidden');
+sessionStorage.setItem('tmrw-auth','1');
+}else{
+document.getElementById('pwErr').style.display='block';
+document.getElementById('pwInput').value='';
+document.getElementById('pwInput').focus();
+}
+}
+document.getElementById('pwInput').addEventListener('keydown',function(e){if(e.key==='Enter')checkPw();});
+if(sessionStorage.getItem('tmrw-auth')==='1'){
+document.getElementById('pwGate').style.display='none';
+document.getElementById('mainContent').classList.remove('content-hidden');
+}
+</script>
+</body>
+</html>
